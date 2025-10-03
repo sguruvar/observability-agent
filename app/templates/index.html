@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Claims Processing Agent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 2rem;
+        }
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+        }
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            margin-left: 20%;
+        }
+        .bot-message {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            margin-right: 20%;
+        }
+        .status-badge {
+            font-size: 0.875rem;
+            padding: 0.375rem 0.75rem;
+        }
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            text-align: center;
+            transition: border-color 0.15s ease-in-out;
+        }
+        .file-upload-area:hover {
+            border-color: #007bff;
+        }
+        .file-upload-area.dragover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-alt me-2"></i>
+                Insurance Claims Agent
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#submit-claim">Submit Claim</a>
+                <a class="nav-link" href="#check-status">Check Status</a>
+                <a class="nav-link" href="#chat">AI Assistant</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">AI-Powered Insurance Claims Processing</h1>
+            <p class="lead mb-4">Submit, track, and get instant decisions on your insurance claims using advanced AI technology.</p>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <i class="fas fa-upload fa-3x mb-3"></i>
+                            <h5>Submit Claims</h5>
+                            <p>Upload documents and submit claims instantly</p>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-robot fa-3x mb-3"></i>
+                            <h5>AI Analysis</h5>
+                            <p>Advanced AI reviews and processes your claims</p>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-check-circle fa-3x mb-3"></i>
+                            <h5>Quick Decisions</h5>
+                            <p>Get fast, accurate claim decisions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container my-5">
+        <!-- Submit Claim Section -->
+        <section id="submit-claim" class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Submit New Claim</h3>
+                </div>
+                <div class="card-body">
+                    <form id="claimForm" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="policyNumber" class="form-label">Policy Number *</label>
+                                    <input type="text" class="form-control" id="policyNumber" name="policyNumber" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="claimType" class="form-label">Claim Type *</label>
+                                    <select class="form-select" id="claimType" name="claimType" required>
+                                        <option value="">Select claim type</option>
+                                        <option value="auto">Auto Insurance</option>
+                                        <option value="home">Home Insurance</option>
+                                        <option value="health">Health Insurance</option>
+                                        <option value="life">Life Insurance</option>
+                                        <option value="property">Property Damage</option>
+                                        <option value="liability">Liability</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="amount" class="form-label">Claim Amount ($) *</label>
+                                    <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description *</label>
+                                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactEmail" class="form-label">Contact Email *</label>
+                                    <input type="email" class="form-control" id="contactEmail" name="contactEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactPhone" class="form-label">Contact Phone</label>
+                                    <input type="tel" class="form-control" id="contactPhone" name="contactPhone">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Supporting Documents</label>
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <p class="mb-2">Drag and drop files here or click to browse</p>
+                                <p class="text-muted small">Supported formats: JPG, PNG, PDF (Max 10MB)</p>
+                                <input type="file" class="form-control d-none" id="document" name="document" accept=".jpg,.jpeg,.png,.pdf">
+                            </div>
+                            <div id="fileInfo" class="mt-2"></div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Claim
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Check Status Section -->
+        <section id="check-status" class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0"><i class="fas fa-search me-2"></i>Check Claim Status</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="claimIdInput" placeholder="Enter Claim ID">
+                                <button class="btn btn-outline-primary" type="button" onclick="checkClaimStatus()">
+                                    <i class="fas fa-search me-1"></i>Check Status
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="claimStatusResult"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Chat Section -->
+        <section id="chat" class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0"><i class="fas fa-comments me-2"></i>AI Assistant</h3>
+                    <small class="text-muted">Ask questions about your claims or insurance policies</small>
+                </div>
+                <div class="card-body">
+                    <div class="chat-container" id="chatContainer">
+                        <div class="message bot-message">
+                            <strong>AI Assistant:</strong> Hello! I'm here to help you with your insurance claims. You can ask me about claim status, policy details, or general insurance questions. How can I assist you today?
+                        </div>
+                    </div>
+                    <div class="input-group mt-3">
+                        <input type="text" class="form-control" id="chatInput" placeholder="Type your message here...">
+                        <button class="btn btn-primary" type="button" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 Insurance Claims Agent. Powered by AWS Bedrock AI.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let sessionId = null;
+
+        // File upload handling
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('document');
+        const fileInfo = document.getElementById('fileInfo');
+
+        fileUploadArea.addEventListener('click', () => fileInput.click());
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileInfo(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                updateFileInfo(e.target.files[0]);
+            }
+        });
+
+        function updateFileInfo(file) {
+            fileInfo.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-file me-2"></i>
+                    <strong>Selected:</strong> ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)
+                </div>
+            `;
+        }
+
+        // Form submission
+        document.getElementById('claimForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('policyNumber', document.getElementById('policyNumber').value);
+            formData.append('claimType', document.getElementById('claimType').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('amount', document.getElementById('amount').value);
+            formData.append('contactEmail', document.getElementById('contactEmail').value);
+            formData.append('contactPhone', document.getElementById('contactPhone').value);
+            
+            if (fileInput.files.length > 0) {
+                formData.append('document', fileInput.files[0]);
+            }
+
+            try {
+                const response = await fetch('/api/claims/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Claim submitted successfully! Claim ID: ${result.claimId}`);
+                    document.getElementById('claimForm').reset();
+                    fileInfo.innerHTML = '';
+                } else {
+                    alert(`Error: ${result.error}`);
+                }
+            } catch (error) {
+                alert(`Error submitting claim: ${error.message}`);
+            }
+        });
+
+        // Check claim status
+        async function checkClaimStatus() {
+            const claimId = document.getElementById('claimIdInput').value;
+            if (!claimId) {
+                alert('Please enter a claim ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/claims/${claimId}`);
+                const result = await response.json();
+                
+                const resultDiv = document.getElementById('claimStatusResult');
+                
+                if (result.claimId) {
+                    const statusClass = getStatusClass(result.status);
+                    
+                    resultDiv.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>Claim Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Claim ID:</strong> ${result.claimId}</p>
+                                        <p><strong>Policy Number:</strong> ${result.policyNumber}</p>
+                                        <p><strong>Claim Type:</strong> ${result.claimType}</p>
+                                        <p><strong>Amount:</strong> $${result.amount}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Status:</strong> <span class="badge ${statusClass}">${result.status.toUpperCase()}</span></p>
+                                        <p><strong>Submitted:</strong> ${new Date(result.submittedAt).toLocaleDateString()}</p>
+                                        ${result.processedAt ? `<p><strong>Processed:</strong> ${new Date(result.processedAt).toLocaleDateString()}</p>` : ''}
+                                        ${result.decision ? `<p><strong>Decision:</strong> ${result.decision.toUpperCase()}</p>` : ''}
+                                    </div>
+                                </div>
+                                ${result.reasoning ? `<div class="mt-3"><strong>Reasoning:</strong><br><p class="text-muted">${result.reasoning}</p></div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            ${result.error || 'Claim not found'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('claimStatusResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error checking claim status: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 'approved': return 'bg-success';
+                case 'rejected': return 'bg-danger';
+                case 'pending_review': return 'bg-warning';
+                case 'submitted': return 'bg-info';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // Chat functionality
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            input.value = '';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        sessionId: sessionId
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    addMessage(result.response, 'bot');
+                    sessionId = result.sessionId;
+                } else {
+                    addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                }
+            } catch (error) {
+                addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.innerHTML = `<strong>${sender === 'user' ? 'You' : 'AI Assistant'}:</strong> ${text}`;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>

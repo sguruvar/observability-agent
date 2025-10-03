@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observability Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .metric-card {
+            transition: transform 0.2s;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        .problem-high {
+            border-left: 4px solid #dc3545;
+        }
+        .problem-medium {
+            border-left: 4px solid #ffc107;
+        }
+        .problem-low {
+            border-left: 4px solid #28a745;
+        }
+        .auto-refresh {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-chart-line me-2"></i>
+                Observability Dashboard
+            </span>
+            <span class="navbar-text">
+                <i class="fas fa-sync-alt auto-refresh" id="refreshIcon"></i>
+                Auto-refresh: <span id="refreshStatus">ON</span>
+            </span>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+                        <h5 class="card-title">High Severity</h5>
+                        <h2 class="text-danger" id="highSeverity">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exclamation-circle fa-2x text-warning mb-2"></i>
+                        <h5 class="card-title">Medium Severity</h5>
+                        <h2 class="text-warning" id="mediumSeverity">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-info-circle fa-2x text-info mb-2"></i>
+                        <h5 class="card-title">Low Severity</h5>
+                        <h2 class="text-info" id="lowSeverity">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-lightbulb fa-2x text-success mb-2"></i>
+                        <h5 class="card-title">Recommendations</h5>
+                        <h2 class="text-success" id="recommendations">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Correlation Story -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="fas fa-link me-2"></i>Correlation Analysis - The Complete Story</h5>
+                        <small>Linking Metrics, Logs, and Traces</small>
+                    </div>
+                    <div class="card-body">
+                        <div id="correlationStory">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-spinner fa-spin"></i> Loading correlation analysis...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Problems and Recommendations -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-bug me-2"></i>Detected Problems</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="problemsList">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-lightbulb me-2"></i>AI Recommendations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recommendationsList">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-external-link-alt me-2"></i>Quick Links</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <a href="http://localhost:9090" target="_blank" class="btn btn-outline-primary w-100 mb-2">
+                                    <i class="fas fa-chart-bar me-2"></i>Prometheus
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="http://localhost:5601" target="_blank" class="btn btn-outline-success w-100 mb-2">
+                                    <i class="fas fa-search me-2"></i>OpenSearch
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="http://localhost:16686" target="_blank" class="btn btn-outline-info w-100 mb-2">
+                                    <i class="fas fa-project-diagram me-2"></i>Jaeger
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="http://localhost:3001" target="_blank" class="btn btn-outline-warning w-100 mb-2">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Grafana
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let refreshInterval;
+
+        function updateCorrelation() {
+            fetch('/api/correlation/story')
+                .then(response => response.json())
+                .then(data => {
+                    const correlationDiv = document.getElementById('correlationStory');
+                    
+                    let html = '';
+                    
+                    // Display chapters
+                    data.chapters.forEach(chapter => {
+                        const icons = {
+                            'Prometheus': 'chart-line',
+                            'OpenSearch': 'search',
+                            'Jaeger': 'project-diagram'
+                        };
+                        const colors = {
+                            'Prometheus': 'primary',
+                            'OpenSearch': 'success',
+                            'Jaeger': 'info'
+                        };
+                        
+                        html += `
+                            <div class="mb-3">
+                                <h6><i class="fas fa-${icons[chapter.source] || 'book'} me-2 text-${colors[chapter.source] || 'secondary'}"></i>${chapter.title}</h6>
+                                <p class="text-muted mb-2">${chapter.narrative}</p>
+                                <div class="alert alert-${colors[chapter.source] || 'secondary'} mb-0">
+                                    <small><strong>Source:</strong> ${chapter.source}</small><br>
+                                    <small><strong>Data:</strong> ${JSON.stringify(chapter.data)}</small>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    // Display conclusion
+                    if (data.conclusion) {
+                        html += `
+                            <div class="mt-4 p-3 bg-warning bg-opacity-10 border border-warning rounded">
+                                <h6><i class="fas fa-bullseye me-2"></i>Correlated Conclusion</h6>
+                                <p><strong>🔍 Root Cause:</strong> ${data.conclusion.root_cause}</p>
+                                <p><strong>⚠️ Impact:</strong> ${data.conclusion.impact}</p>
+                                <p><strong>💡 Recommendation:</strong> ${data.conclusion.recommendation}</p>
+                                <p class="mb-0"><strong>⏱️ Fix Estimate:</strong> ${data.conclusion.fix_estimate}</p>
+                            </div>
+                        `;
+                    }
+                    
+                    correlationDiv.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error fetching correlation:', error);
+                    document.getElementById('correlationStory').innerHTML = '<div class="text-center text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error loading correlation data</div>';
+                });
+        }
+
+        function updateDashboard() {
+            fetch('/api/analysis')
+                .then(response => response.json())
+                .then(data => {
+                    // Update summary cards
+                    document.getElementById('highSeverity').textContent = data.summary.high_severity;
+                    document.getElementById('mediumSeverity').textContent = data.summary.medium_severity;
+                    document.getElementById('lowSeverity').textContent = data.summary.low_severity;
+                    document.getElementById('recommendations').textContent = data.recommendations.length;
+
+                    // Update problems list
+                    const problemsList = document.getElementById('problemsList');
+                    if (data.problems.length === 0) {
+                        problemsList.innerHTML = '<div class="text-center text-success"><i class="fas fa-check-circle me-2"></i>No problems detected</div>';
+                    } else {
+                        problemsList.innerHTML = data.problems.map(problem => `
+                            <div class="card mb-2 problem-${problem.severity}">
+                                <div class="card-body py-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>${problem.type.replace(/_/g, ' ').toUpperCase()}</strong>
+                                            <br>
+                                            <small class="text-muted">${problem.timestamp}</small>
+                                        </div>
+                                        <span class="badge bg-${problem.severity === 'high' ? 'danger' : problem.severity === 'medium' ? 'warning' : 'success'}">
+                                            ${problem.severity.toUpperCase()}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+
+                    // Update recommendations list
+                    const recommendationsList = document.getElementById('recommendationsList');
+                    if (data.recommendations.length === 0) {
+                        recommendationsList.innerHTML = '<div class="text-center text-muted"><i class="fas fa-thumbs-up me-2"></i>No recommendations at this time</div>';
+                    } else {
+                        recommendationsList.innerHTML = data.recommendations.map(rec => `
+                            <div class="card mb-2">
+                                <div class="card-body py-2">
+                                    <h6 class="card-title">${rec.problem}</h6>
+                                    <ul class="mb-0">
+                                        ${rec.solutions.map(solution => `<li><small>${solution}</small></li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('problemsList').innerHTML = '<div class="text-center text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error loading data</div>';
+                });
+        }
+
+        function startAutoRefresh() {
+            refreshInterval = setInterval(updateDashboard, 5000); // Refresh every 5 seconds
+        }
+
+        function stopAutoRefresh() {
+            clearInterval(refreshInterval);
+        }
+
+        // Initial load
+        updateDashboard();
+        updateCorrelation();
+        startAutoRefresh();
+        
+        // Also update correlation periodically
+        setInterval(updateCorrelation, 10000); // Every 10 seconds
+
+        // Toggle auto-refresh
+        document.getElementById('refreshStatus').addEventListener('click', function() {
+            if (refreshInterval) {
+                stopAutoRefresh();
+                this.textContent = 'OFF';
+                this.classList.remove('text-success');
+                this.classList.add('text-danger');
+            } else {
+                startAutoRefresh();
+                this.textContent = 'ON';
+                this.classList.remove('text-danger');
+                this.classList.add('text-success');
+            }
+        });
+    </script>
+</body>
+</html>

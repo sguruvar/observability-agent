@@ -1,0 +1,27 @@
+{
+  "name": "aws-bedrock-insurance-agent-python",
+  "version": "1.0.0",
+  "description": "AWS Bedrock agent for insurance claims processing - Python Flask Application",
+  "main": "app.py",
+  "scripts": {
+    "start": "python app.py",
+    "run": "python run.py",
+    "deploy": "python deploy.py",
+    "dev": "python app.py"
+  },
+  "keywords": [
+    "aws",
+    "bedrock",
+    "agent",
+    "insurance",
+    "claims",
+    "ai",
+    "python",
+    "flask"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "python": ">=3.11.0"
+  }
+}
